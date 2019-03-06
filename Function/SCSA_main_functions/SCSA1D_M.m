@@ -1,25 +1,29 @@
+
+
    
 
 % figure;plot(yf_peaks);hold on;plot(yf_smooth);hold on;plot(diff(yf_smooth));hold on;plot(yf_smooth*0+Th);
 
-function [yscsa,Nh,psinnor,kappa,Ymin,squaredEIGF0]= SCSA1D(y,fs,h,gm)
-
+function [yscsa,Nh,psinnor,kappa,Ymin,squaredEIGF0]= SCSA1D_M(y,M,gm)
+fs=1;
 Lcl = (1/(2*sqrt(pi)))*(gamma(gm+1)/gamma(gm+(3/2)));
 N=max(size(y));
 %% remove the negative part
 Ymin=min(y);
 
  y_scsa = y -Ymin;
-%% Build Delta metrix for the SC_hSA
-feh = 2*pi/N;
-D=delta(N,fs,feh);
-h
-fs
-coef=(h*2*pi)/(fs*N)
-
 %% start the SC_hSA
 Y = diag(y_scsa);
-SC_h = -h*h*D-Y; % The Schrodinger operaor
+%% Build Delta metrix for the SC_hSA
+feh = 2*pi/N;
+D=delta2(N,feh);
+coef= M/N;
+SC_h = -coef^2*D-Y; % The Schrodinger operaor
+
+%
+t0=0:1:(N-1);
+h=trapz(sqrt(y-min(y)),t0);
+fs=(h*2*pi)/(M*N)
 
 % = = = = = = Begin : The eigenvalues and eigenfunctions
 [psi,lamda] = eig(SC_h); % All eigenvalues and associated eigenfunction of the schrodinger operator
@@ -99,7 +103,7 @@ squaredEIGF0=(h/Lcl)*(psinnor.^2)*kappa;
     
 %Author: Zineb Kaisserli
 
-function [Dx]=delta(n,fex,feh)
+function [Dx]=delta2(n,feh)
     ex = kron([(n-1):-1:1],ones(n,1));
     if mod(n,2)==0
         dx = -pi^2/(3*feh^2)-(1/6)*ones(n,1);
@@ -110,10 +114,8 @@ function [Dx]=delta(n,fex,feh)
         test_bx = -0.5*((-1).^ex).*cot(ex*feh*0.5)./(sin(ex*feh*0.5));
         test_tx = -0.5*((-1).^(-ex)).*cot((-ex)*feh*0.5)./(sin((-ex)*feh*0.5));
     end
-    Ex = full(spdiags([test_bx dx test_tx],[-(n-1):0 (n-1):-1:1],n,n));
-    
-    Dx=(feh/fex)^2*Ex;
-
+    Dx = full(spdiags([test_bx dx test_tx],[-(n-1):0 (n-1):-1:1],n,n));
+   
     
 
 

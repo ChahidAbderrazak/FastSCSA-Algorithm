@@ -1,9 +1,12 @@
-   
 
-% figure;plot(yf_peaks);hold on;plot(yf_smooth);hold on;plot(diff(yf_smooth));hold on;plot(yf_smooth*0+Th);
+function [yscsa,Nh,psinnor,kappa,Ymin,squaredEIGF0]= SCSA1D_padding(y_in,fs,h,gm)
+global plot_eigfun figr 
 
-function [yscsa,Nh,psinnor,kappa,Ymin,squaredEIGF0]= SCSA1D(y,fs,h,gm)
 
+%% Padding
+[y,a, b]=Set_Padding_Bounds(y_in);
+    
+%% SCSA
 Lcl = (1/(2*sqrt(pi)))*(gamma(gm+1)/gamma(gm+(3/2)));
 N=max(size(y));
 %% remove the negative part
@@ -13,9 +16,6 @@ Ymin=min(y);
 %% Build Delta metrix for the SC_hSA
 feh = 2*pi/N;
 D=delta(N,fs,feh);
-h
-fs
-coef=(h*2*pi)/(fs*N)
 
 %% start the SC_hSA
 Y = diag(y_scsa);
@@ -31,7 +31,7 @@ ind = find(All_lamda<0);
 %  negative eigenvalues
 Neg_lamda = All_lamda(ind);
 kappa = diag((abs(Neg_lamda)).^gm); 
-Nh = size(ind,1); %%#ok<NASGU> % number of negative eigenvalues
+Nh = size(kappa,1); %%#ok<NASGU> % number of negative eigenvalues
 
 
 
@@ -65,6 +65,79 @@ end
 
 squaredEIGF0=(h/Lcl)*(psinnor.^2)*kappa;
 
+if plot_eigfun==1
+    Gr=floor(sqrt(Nh))
+    if Gr*Gr-Nh<0
+        Gr=Gr+1;
+    end
+    if Gr>4
+        Gr=4;
+    end
+    
+    figure(figr);
+    
+    for k=1:floor(Gr*Gr/2)
+        idx=Gr*Gr+1-k; 
+        subplot(Gr,Gr,k);plot(squaredEIGF0(:,k)); title(strcat('\psi^2_{',num2str(k),'}'));  set(gca,'YTickLabel',[],'XTickLabel',[])
+        subplot(Gr,Gr,idx);plot(squaredEIGF0(:,Nh-k));title(strcat('\psi^2_{',num2str(Nh+1-k),'}'));  set(gca,'YTickLabel',[],'XTickLabel',[]) 
+
+    end
+    
+%     figr=figr+1;
+
+end
+
+
+%% Padding removal 
+% close all;figure; plot(y); hold on; plot(yscsa);hold on; plot(yscsa0);
+
+yscsa=yscsa(a+1:end-b);
+
+end
+
+function [y_bnd,a, b]=Set_Padding_Bounds(y)
+N=max(size(y));
+
+y_bnd=y;a=0;b=0;
+y_bnd=y;
+ya=y_bnd(1);
+yb=y_bnd(end);
+
+m=max(abs(y))- max(abs(ya-yb));
+M=max(abs(y))-min(abs(y));
+
+
+PR_Mm=4;
+if PR_Mm>M/m                          % ration of highiest peak and boundry min values difference 
+
+
+    if ya<yb
+        a=0;
+        b=min(find(y_bnd>=yb))-1;
+        idxb=b:-1:1;
+        y_bnd=[y_bnd;y_bnd(idxb)];
+
+
+    else
+
+        b=0;
+        a=max(find(y_bnd>=ya))+1;
+        idxa=N:-1:a;
+        y_bnd=[y_bnd(idxa);y_bnd];
+
+        a=max(size(idxa));
+
+    end
+end
+
+% y0=y_bnd(a+1:end-b);
+% figure; plot(y); hold on; plot(y_bnd);
+% mse(y-y0)
+
+d=1;
+
+end
+
 
 
 
@@ -74,7 +147,7 @@ squaredEIGF0=(h/Lcl)*(psinnor.^2)*kappa;
 
     % Author: Taous Meriem Laleg
 
-    function y = simp(f,dx);
+    function y = simp(f,dx)
     %  This function returns the numerical integration of a function f
     %  using the Simpson method
 
@@ -91,6 +164,7 @@ squaredEIGF0=(h/Lcl)*(psinnor.^2)*kappa;
     end
     y=I(n);
     
+    end    
 
     %**********************************************************************
     %*********             Delata Metrix discretization           *********
@@ -114,7 +188,4 @@ function [Dx]=delta(n,fex,feh)
     
     Dx=(feh/fex)^2*Ex;
 
-    
-
-
-
+end

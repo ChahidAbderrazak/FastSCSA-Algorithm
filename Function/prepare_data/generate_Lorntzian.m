@@ -1,44 +1,25 @@
-function [f_ppm,zt0,zt,zf0,zf]=generate_Lorntzian(N)
-amp = [10];
-amp2 = [2.5]; 
-tau = [7.6];
-freq = [1800];
-freq2 = [2500];
-
-
-% the values ??of departure pp
-%start_val = [1 16 1800 10 2500];
-start_val = [20 10 1800 12 2500 ];
+function [t,zt0,f_ppm, zf0]=generate_Lorntzian()
+fs=1;
+N = 1024;% number of points 
+amp = [10]*[ 1 2 0.7];
+tau = [7.6]*[ 1 1 1];
+freq = [1800]*[  0.5 1 2];
 
 % Generation of the spectrum signal
+f_Hz = 1:fs/N:fs;
+t=0:1/fs:(N-1)/fs;
+lorentz=f_Hz*0;
+l=1:N;
 
-N = 1024;% number of points 
-T2 = 10;% time constant 
-level = 5; % noise level 
-aa = (1)^2;
-f_Hz = 1:N;
-
-
-for l=1: N 
+for k=1:3
     
-    lorentz(l) = amp*(tau)/(1-i*((2*pi/N)*(freq-4*l))*(tau)) + amp2*(tau)/(1-i*((2*pi/N)*(freq2-4*l))*(tau)); 
+    lorentz = lorentz + amp(k)*(tau(k))./(1-i*((2*pi/N).*(freq(k)-4*l)).*(tau(k))); 
     
 end
 
 zf0=lorentz;
-
-
-% generate noise 
-rng(1);
-e= rand(1, 1024);
-e = e- mean(e);
-
-% generate the specturm 
-zf = lorentz + level*e*(1+ i); % noisy signal 
-
-zt=ifft(zf);
+%% Get the time domaine signal 
 zt0=ifft(zf0);
 
-
-[f_ppm,f_Hz]= ppmScaleFid4(zt, length(zt));
+[f_ppm,f_Hz]= ppmScaleFid4(zt0, length(zt0));
 

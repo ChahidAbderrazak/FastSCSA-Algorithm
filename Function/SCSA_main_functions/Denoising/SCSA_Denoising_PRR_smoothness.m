@@ -29,15 +29,14 @@
 % Done: Oct,  2018
 % King Abdullah University of Sciences and Technology (KAUST)
 
-function [yscsa, h_op, Nh,Noise_area]=SCSA_Denoising_PRR_smoothness( f_ppm, y, gm , fs)
-
-
+function [yscsa, h_op, fs_op, Nh,Noise_area]=SCSA_Denoising_PRR_smoothness( f_ppm, y, gm , fs)
+fs_op=fs;
+global  ref_loop nb_loops Plot_fig
 %% List of paramters
 PRR=0.08;              %  The tolerated Peak Reduction ratio % used to check the smoothness creteria ~ 0.08 
 STD_TH_Coef=0.75;       % Paramter that determines the noisy region. decrese it to get wider  region 
-
-
-
+ref_loop=3;
+nb_loops=90; 
 % close all
 N=max(size(y));
 
@@ -69,7 +68,7 @@ eps=0.2;
 
 
 %% Setup the  Wait bar
-global cnt_wait Tot_iter   wait_bar ref_loop nb_loops 
+global cnt_wait Tot_iter   wait_bar   
 Tot_iter=0;
 % nb_loops=  90;% 10%                % Number of loops 
 % ref_loop =3;                       % number of refinement loop to find the optimal h for denoising
@@ -97,15 +96,15 @@ end
 
 h_op=min(h_op_list(find(Cost_function==min(Cost_function))));
 
-global    Noise_area  Padding
+global    Padding
         % yscsa = scsa(h);
         
         if Padding==1
 
-            [h_op, yscsa,Nh,psinnor,kappa,Ymin,squaredEIGF0]= SCSA_1D_padding(y,fs,h_op,gm);
+            [yscsa,Nh,psinnor,kappa,Ymin,squaredEIGF0]= SCSA1D_padding(y,fs,h_op,gm);
         else
 
-            [h_op, yscsa,Nh,psinnor,kappa,Ymin,squaredEIGF0]= SCSA_1D(y,fs,h_op,gm);
+            [yscsa,Nh,psinnor,kappa,Ymin,squaredEIGF0]= SCSA1D(y,fs,h_op,gm);
         
         end
 
@@ -260,10 +259,10 @@ global    Padding
         % yscsa = scsa(h);
         
         if Padding==1
-            [h, yscsa,Nh,psinnor,kappa,Ymin,squaredEIGF0]= SCSA_1D_padding(y,fs,h,gm);
+            [yscsa,Nh,psinnor,kappa,Ymin,squaredEIGF0]= SCSA1D_padding(y,fs,h,gm);
         else
             
-            [h, yscsa,Nh,psinnor,kappa,Ymin,squaredEIGF0]= SCSA_1D(y,fs,h,gm);
+            [yscsa,Nh,psinnor,kappa,Ymin,squaredEIGF0]= SCSA1D(y,fs,h,gm);
 
         end
 
