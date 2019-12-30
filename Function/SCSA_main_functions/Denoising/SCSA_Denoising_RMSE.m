@@ -96,6 +96,11 @@ fs_RMSE_op=fs_vec(Idx1);
     if Flag_RMSE<0
         fs_op=fs_RMSE_op;
         h_op=h_RMSE_op;
+        
+%         fs_op=fs_vec(end)+2;
+%         h_op=h_vec(end)+2;
+        
+        
         break;
     end
 

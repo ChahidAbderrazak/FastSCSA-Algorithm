@@ -1,8 +1,8 @@
 function [t,zt0,f_ppm, zf0]=generate_Lorntzian()
 fs=1;
 N = 1024;% number of points 
-amp = [10]*[ 1 2 0.7];
-tau = [7.6]*[ 1 1 1];
+amp = [10]*[ 1 2 0.3];
+tau = [7.6]*[ 1 1.5 1.7];
 freq = [1800]*[  0.5 1 2];
 
 % Generation of the spectrum signal

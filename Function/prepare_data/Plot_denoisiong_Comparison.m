@@ -4,10 +4,10 @@
 function  Plot_denoisiong_Comparison(noise_level, f, yf0, yf,  yf_denoised1, param1, yf_denoised2, param2)
 
 figure;
-plot(f,yf,'k','LineWidth',4);hold on
-plot(f,yf0,'g','LineWidth',3.7);hold on
-plot(f,yf_denoised1,'r','LineWidth',3.4); hold on
-plot(f,yf_denoised2,'b','LineWidth',3.3); hold on
+plot(f,yf,'k','LineWidth',2);hold on
+plot(f,yf0,'g','LineWidth',1.7);hold on
+plot(f,yf_denoised1,'r','LineWidth',1.4); hold on
+plot(f,yf_denoised2,'b','LineWidth',1.3); hold on
 
 legend({strcat('Noisy signal \sigma= ',num2str(noise_level)),strcat('Clean signal '),...
         strcat('Denoised signal', param1 ),strcat(' Denoised signal',param2 ) },...

@@ -30,8 +30,7 @@ for noise_level=20%0:5:30
     [yscsa0, h_op0, fs_op0, Nh_op0]=SCSA_Denoising_PSNR( y, gm , fs ,y0);
     PSNR_op0=psnr(y0,yscsa0)
     param0= strcat(' : PSNR =>[ h^*=',num2str(h_op0),' , f_s^*=',num2str(fs_op0),', Nh= ',num2str(Nh_op0) ,', PSNR=',num2str(PSNR_op0),']');
-
-%     
+    
 %     
 %     fprintf('\n-->  Signal  Denoising SCSA  using fs scanning. Cost function= Smoothness')
 %     [yscsa1, h_op1, fs_op1, Nh_op1,Noise_area1]=SCSA_Denoising_Smoothness( y, gm , fs);
@@ -50,6 +49,8 @@ for noise_level=20%0:5:30
 %     [yscsa3, h_op3, fs_op3, Nh_op3]=SCSA_Denoising_Total_Area( y, gm , fs);
 %     PSNR_op3=psnr(y0,yscsa3)
 %     param3= strcat(': Total area => [ h^*=',num2str(h_op3),' , f_s^*=',num2str(fs_op3),', Nh= ',num2str(Nh_op3) ,', PSNR=',num2str(PSNR_op3),']');
+
+
 
     fprintf('\n-->  Signal  Denoising SCSA  using fs scanning. Cost function= RMSE')
     [yscsa4, h_op4, fs_op4, Nh_op4]=SCSA_Denoising_RMSE( y, gm);

@@ -8,15 +8,10 @@ Lcl = (1/(2*sqrt(pi)))*(gamma(gm+1)/gamma(gm+(3/2)));
 N=max(size(y));
 %% remove the negative part
 Ymin=min(y);
-
- y_scsa = y -Ymin;
+y_scsa = y -Ymin;
 %% Build Delta metrix for the SC_hSA
 feh = 2*pi/N;
 D=delta(N,fs,feh);
-h
-fs
-coef=(h*2*pi)/(fs*N)
-
 %% start the SC_hSA
 Y = diag(y_scsa);
 SC_h = -h*h*D-Y; % The Schrodinger operaor
@@ -34,7 +29,6 @@ kappa = diag((abs(Neg_lamda)).^gm);
 Nh = size(ind,1); %%#ok<NASGU> % number of negative eigenvalues
 
 
-
 if Nh~=0
     
 % Associated eigenfunction and normalization
@@ -45,10 +39,12 @@ psinnor = psin./sqrt(I);  % The L^2 normalized eigenfunction
 
 %yscsa =4*h*sum((psinnor.^2)*kappa,2); % The 1D SC_hSA formula
 yscsa1 =((h/Lcl)*sum((psinnor.^2)*kappa,2)).^(2/(1+2*gm));
+
+
 else
     
   psinnor = 0*psi;  % The L^2 normalized eigenfunction 
-
+  kappa=0*y';
   yscsa1=0*y;
   yscsa1=yscsa1-10*abs(max(y));
   disp('There are no negative eigenvalues. Please change the SCSA parameters: h, gm ')
@@ -62,8 +58,38 @@ end
  %% add the removed negative part
  yscsa = yscsa1 + Ymin;
 
+ 
+ squaredEIGF0=(h/Lcl)*(psinnor.^2)*kappa;
 
-squaredEIGF0=(h/Lcl)*(psinnor.^2)*kappa;
+ 
+%% Manipulate the specrums 
+
+%%%%%%% play with eigenfunction spectrum 
+
+% figure;
+% 
+% for fs0=[1:1:4]*0.01*feh
+%     
+% D=delta(N,fs,fs0);
+% plot(D(500,:)); hold on
+% end
+
+Df=-h*h*D;
+G=Df-min(min(Df));
+G=G./max(max(G));
+
+% figure(23349);%
+% imshow(Df(1:500,1:500));title(strcat('h=',num2str(h),', f_s=',num2str(fs)))
+% 
+
+
+% 
+% figure(43349);%
+% d_fft=fft(Df(500,:));
+% plot(real(d_fft), imag(d_fft)); hold on
+% plot(real(d_iff)); hold on
+
+
 
 
 
@@ -93,14 +119,16 @@ squaredEIGF0=(h/Lcl)*(psinnor.^2)*kappa;
     
 
     %**********************************************************************
-    %*********             Delata Metrix discretization           *********
+    %*********             Delta Metrix discretization           *********
+    % using pseudo-spectrale de Fourier 
     %**********************************************************************
     
     
 %Author: Zineb Kaisserli
 
 function [Dx]=delta(n,fex,feh)
-    ex = kron([(n-1):-1:1],ones(n,1));
+
+    ex =kron([(n-1):-1:1],ones(n,1));
     if mod(n,2)==0
         dx = -pi^2/(3*feh^2)-(1/6)*ones(n,1);
         test_bx = -(-1).^ex*(0.5)./(sin(ex*feh*0.5).^2);
@@ -114,7 +142,5 @@ function [Dx]=delta(n,fex,feh)
     
     Dx=(feh/fex)^2*Ex;
 
-    
-
-
+  
 

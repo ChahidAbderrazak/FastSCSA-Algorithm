@@ -52,14 +52,16 @@ end
 
 Results=[];
 x_vec=[]; h_vec=[];fs_vec=[];M_vec=[];
-PSNR_vec=[];RMSE_vec=[];Cost_vec=[];
+PSNR_vec=[];RMSE_vec=[];Cost_vec=[];MSE_vec=[];
 cnt=0;
-%  for fs=[5:0.2:10]%N/2]
-for fs=[fs0:1:fs0*1000 ]%N/2]
+
+    
+%%  for fs=[5:0.2:10]%N/2]
+for fs=[fs0:4:fs0*1000 ]%N/2]
     cnt=cnt+1; x_vec(cnt)=fs;                    Results.x=x_vec;
     [yscsa,Nh,psinnor,kappa,Ymin]= SCSA1D(y,fs,h,gm);M=(2*pi*h/fs);
 
-%  for h=24:0.05:40
+%  for h=15:1:40
 % %  for h=linspace(0,Intg_y,N)
 %     cnt=cnt+1;x_vec(cnt)=h;                    Results.x=x_vec;
 %     [yscsa,Nh,psinnor,kappa,Ymin]= SCSA1D(y,fs,h,gm);M=(2*pi*h/fs);
@@ -73,7 +75,8 @@ for fs=[fs0:1:fs0*1000 ]%N/2]
     fs_vec=[fs_vec fs];        Results.fs=fs_vec;
     RMSE_vec=[RMSE_vec mse(y-yscsa)];        Results.RMSE=RMSE_vec;
     PSNR_vec=[ PSNR_vec psnr(y0,yscsa)];     Results.PSNR=PSNR_vec;
-     
+    MSE_vec=[ MSE_vec mse(y0-yscsa)];     Results.MSE=MSE_vec;
+
 %% Get the optimal value 
 % RMSE
 Idx1=find(RMSE_vec==min(RMSE_vec));
@@ -98,9 +101,31 @@ fs_psnr_op=fs_vec(Idx2);
       title(strcat('SCSA reconstruction using : h=',num2str(h),'  \gamma=',num2str(gm),'  , f_s= ',num2str(fs),'  , N_h=',num2str(Nh)...
                     ,'  , [RMSE= ',num2str(RMSE_op),', h^*=', num2str(h_RMSE_op), ', f_s^*=', num2str(fs_RMSE_op),']',...
                     ', [PSNR=',num2str(PSNR_op),', h^*=', num2str(h_psnr_op), ', f_s^*=', num2str(fs_psnr_op), ']'))
-        ylabel(ax(1), 'RMSEh');
-        ylabel(ax(2), 'PSNR');
+        ylabel(ax(1), '||y_{denoised} - y_{noisy}||');
+        ylabel(ax(2), '||y_{denoised} - y_{clean}||');
+        set(ax,'fontsize',16)
+
       pause(0.3)
+
+    %% plot the first eigenfunction
+    lgnd{cnt}=strcat('  f_s= ',num2str(fs));
+    figure(21);%
+    % plot(Df(500,:)); hold on
+    subplot(411);plot(y0,'linewidth',2); 
+    legend(lgnd)
+    title('The input signal')
+    
+    subplot(412);plot(psinnor(:,1).^2,'linewidth',2); hold on
+    legend(lgnd)
+    title('\psi^2_1(f)')
+    
+    subplot(413);plot(psinnor(:,2).^2,'linewidth',2); hold on
+    legend(lgnd)
+    title('\psi^2_2(f)')
+
+    subplot(414);plot(psinnor(:,3).^2,'linewidth',2); hold on
+    legend(lgnd)
+    title('\psi^2_3(f)')
 
 
       
@@ -120,9 +145,6 @@ fs_psnr_op=fs_vec(Idx2);
  end
 
 
- 
-
-    
     
  %% Get the optimal procesed signal 
      [yscsa,Nh,psinnor,kappa,Ymin]= SCSA1D(y,fs_op,h_op,gm);
