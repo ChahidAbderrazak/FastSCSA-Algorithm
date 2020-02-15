@@ -4,7 +4,8 @@ addpath ./Function
 addpath ./Function/SCSA_main_functions
 addpath ./Function/SCSA_main_functions/Denoising
 addpath ./Function/prepare_data
-tic
+addpath ./Function/SCSA_main_functions/reconstruction
+addpath ./Function/displays
 
 
 
