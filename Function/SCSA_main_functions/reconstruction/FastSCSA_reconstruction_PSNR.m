@@ -35,7 +35,7 @@ eps=0.2;                    % size of interval to search in around an optimal h
 %% sigal preparation
 y = real(y_in) ;%/max(real(y_in))*76;
 y0 = real(y_desired) ;%/max(real(y_in))*76;
-y_positive=y-min(y);
+% y_positive=y-min(y);
 % h_max=(max(y_positive) + mean(y_positive));
 
 fprintf('\n-->Searching for the optimal h using PSNR. Please wait...')
@@ -122,9 +122,7 @@ global Tot_iter  wait_bar   cnt_wait Nb_itera
     h = h_list(i);%0.045;%15.2;
     [h, yscsa,Nh,psinnor,kappa,Ymin,squaredEIGF0]= SCSA_1D(y,fs,h,gm);
     Nb_itera=Nb_itera+1;
-
     Cost_function(i)= psnr(y0,yscsa);
-    
 
     fprintf('.')
     cnt_wait=cnt_wait+1;

@@ -30,6 +30,7 @@ L=200;
 mse_op=inf;
 h_list= h_min:h_step:h_max;
 N=length(h_list);
+Nb_iteration=length(h_list);
 idx=find(h_list<=h0);
 idx0=idx(end);
 
@@ -39,6 +40,7 @@ if idx0<L;Idmin=1;else;Idmin=idx0-L;end
 h_list=h_list(Idmin:Idmax);
 
 for i=1:length(h_list)
+    fprintf('.')
     tic
     h = h_list(i);%0.045;%15.2;
     tic
@@ -47,13 +49,12 @@ for i=1:length(h_list)
     mse_i=mse(y_desired,y_n);
     cost_msei(i)=mse_i;
     if mse_op>mse_i
-        h_op=h
+        h_op=h;
         Nh_op=Nh;
         mse_op=mse_i;
         yscsa=y_n;
     end
 end
 
-Nb_iteration=length(h_list);
 figure;
 plot(h_list,cost_msei)

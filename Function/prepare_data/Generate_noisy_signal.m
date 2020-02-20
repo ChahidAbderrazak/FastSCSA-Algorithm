@@ -8,6 +8,4 @@
 % Add Gaussian Noise  
 y=awgn(y0,noise_level,'measured');
 
-
-
 figure; plot(y0); hold on;  plot(y); hold off

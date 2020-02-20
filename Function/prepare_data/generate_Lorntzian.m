@@ -36,7 +36,7 @@ y0_complex=lorentz'; %% Th signal without noise
 
 %% generate noise 
 rng(1);
-e= rand(1, N);
+e= rand(N,1);
 e = e- mean(e);
 
 %% generate the specturm 

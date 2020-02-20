@@ -34,45 +34,55 @@ fprintf('\n------------------------------------------ ')
 %% load MRS spectrum
 % Load_prepare_MRS_Spectum2018  %Load Inivo data sent on 18-03-31
 cnt=1;
-for noise_level=10%:5:30
+Noise_list='_Nz';
+
+for sig_num= [-3:-1 3 6 7 ]
     
-    [f, y0_complex,y_complex ]=generate_Lorntzian(noise_level);
-    yf=real(y_complex);    yf0=real(y0_complex);
-    
-    y_desired=yf;       % Reconstruction 
-%     y_desired=yf0;       % Denoising 
-    %% search interval 
-    h_min=0.001;
-    h_max=(max(yf) + mean(yf));
+    for noise_level=10%:10:30
 
-    %% Fast search
-    fprintf('\n-->  fastSCSA ')
-    
-    [yf_fast,h_fast,Nh_fast, Nb_iter_fast]=FastSCSA_reconstruction_PSNR(f, y_desired, yf, gm , fs ,h_min, h_max);
-    MSE_fast=mse(yf_fast,yf0)
+        Data_preparation_Load
+        y_desired=yf;    type_estimation='Recons';    % Reconstruction 
+        y_desired=yf0; type_estimation='Denoiz';    % Denoising 
+        tag_experimt=strcat(type_estimation,'_',sig_name);
+        Noise_list=strcat(Noise_list,'-',num2str(noise_level));
+        used_signl{cnt}=sig_name(1:end-1);
+        %% search interval 
+        h_min=sum(sqrt(yf-min(yf)))/(pi*N);   %0.001;
+        h_max=sum(sqrt(yf-min(yf)))/(pi);     %(max(yf) + mean(yf));
 
-    %% grid search
-    fprintf('\n-->  Grid search ')
+        %% Fast search
+        fprintf('\n-->  fastSCSA ')
 
-    h_step=0.1;
-    h0=h_fast ; % just to accelerate the comparison
-    [yf_grid, h_grid, Nh_grid, Nb_iter_grid]=SCSA_reconstruction_scanning(y_desired, yf, gm , fs ,h_min, h_max, h_step);
-    MSE_grid=mse(yf_grid,yf0)
+        [yf_fast,h_fast,Nh_fast, Nb_iter_fast]=FastSCSA_reconstruction_PSNR(f, y_desired, yf, gm , fs ,h_min, h_max);
+        MSE_fast=mse(yf_fast,y_desired)
 
-    %% Algorithm Comparison
-     table_param(cnt,:)= [noise_level, h_grid ,h_fast, Nh_grid, Nh_fast, MSE_grid, MSE_fast, Nb_iter_grid ,Nb_iter_fast ];
-     cnt=cnt+1;
+        %% grid search
+        fprintf('\n-->  Grid search ')
 
-    % plot figure
-    plot_all_reconstructed_signals
+        h_step=0.1;
+        h0=h_fast ; % just to accelerate the comparison
+        [yf_grid, h_grid, Nh_grid, Nb_iter_grid]=SCSA_reconstruction_scanning(y_desired, yf, gm , fs ,h_min, h_max, h_step);
+        MSE_grid=mse(yf_grid,y_desired)
+
+        %% Algorithm Comparison
+         table_param(cnt,:)= [noise_level, h_grid ,h_fast, Nh_grid, Nh_fast, MSE_grid, MSE_fast, Nb_iter_grid ,Nb_iter_fast ];
+         cnt=cnt+1;
+
+
+
+        % plot figure
+        plot_all_reconstructed_signals
+
+    end
 
 end
-
 d=1;
 
 
 %% Save  results 
 colnames={'Noise_Level','h_grid' ,'h_fast','Nh_grid','Nh_fast','MSE_grid','MSE_fast','iter_grid','iter_fast'};
-perform_output= array2table(table_param, 'VariableNames',colnames)
-% writetable(perform_output,strcat(Results_path,'/report.csv'))
+perform_output= array2table(table_param, 'VariableNames',colnames);
+perform_output.Singal=used_signl'
+name_report=strcat('/',tag_experimt,'_report',Noise_list,'.csv');
+writetable(perform_output,strcat(Results_path,name_report))
 

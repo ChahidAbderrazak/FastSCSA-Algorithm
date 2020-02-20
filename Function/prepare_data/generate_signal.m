@@ -37,18 +37,18 @@
 %  [sig t]=generate_signal(sig_num,Fs,N,alp,beta,A1,A2);
 % %  
 % function [sig t]=generate_signal(sig_num,Fs,N,alp,beta,A1,A2)
-function [sig t]=generate_signal()
+function [sig, t, name_sig]=generate_signal(sig_num)
 
 %% Parameters
- sig_num=8;   % 1)A1, 2) rect, 3)A1*t + A2*t, 4) A1*t^2 + A2*t^2, 5)A1*Exp(alpha*t)u + A2*Exp(beta*t)u, 
+%  sig_num=8;   % 1)A1, 2) rect, 3)A1*t + A2*t, 4) A1*t^2 + A2*t^2, 5)A1*Exp(alpha*t)u + A2*Exp(beta*t)u, 
               % 6)A1*sin(2*pi*alp.*t)+A2*sin(2*pi*beta.*t),  7) A1*sinc(alp.*t)+A2*sinc(beta.*t)
               % 8) RC circuit decharge
  Fs=1;       
  N=1024;
  A1=10;
  alp=0.001; %1
- A2=0;
- beta=2;
+ A2=5;
+ beta=1;
 
 
 
@@ -58,7 +58,7 @@ t3=0:1/Fs:(N-1)/(Fs);
 
 switch sig_num
     case 1
-        disp('Signal = A1')
+        disp('Signal = A1');  name_sig='A1';
         sig=A1*ones([1,N]);
         
     case 2
@@ -72,7 +72,7 @@ switch sig_num
 
         alp=abs(alp);
         beta=abs(beta);
-        disp('Signal = A1*Rect(t/alpha) repeated alpha times of  periode 1/alpha')
+        disp('Signal = A1*Rect(t/alpha) repeated alpha times of  periode 1/alpha'); name_sig='Rec';
         sig=zeros([1,floor(N)])
         alpha0=floor(N/(2*alp))
         
@@ -97,21 +97,21 @@ switch sig_num
 %         
         
      case 3        
-        disp('Signal = A1*t + A2*t')
+        disp('Signal = A1*t + A2*t') ; name_sig='Linear';
         sig1=A1.*t3;
         sig2=A2.*t3;
 %         sig = abs(sig1+circshift(sig2',floor(N*0.5))');
         sig=sig1+sig2;
         t=t3;
      case 4
-        disp('Signal = A1*t^2 + A2*t^2')
+        disp('Signal = A1*t^2 + A2*t^2'); name_sig='square';
         sig1=A1.*t.^2;
         sig2=A2.*t.^2;
         
         sig =  sig1 +circshift(sig2',floor(N*0.5))';
                
     case 5      
-        disp('Signal = A1*Exp(alpha*t)u + A2*Exp(beta*t)u')
+        disp('Signal = A1*Exp(alpha*t)u + A2*Exp(beta*t)u') ; name_sig='exp';
 %         alp=-20;beta=-40;
         sig2=exp(t3.*(alp));
         sig1=exp(t3.*(beta));
@@ -121,21 +121,21 @@ switch sig_num
 
  
     case 6
-        disp('Signal = A1*sin(2*pi*alp.*t)+A2*sin(2*pi*beta.*t)')
+        disp('Signal = A1*sin(2*pi*alp.*t)+A2*sin(2*pi*beta.*t)') ; name_sig='sin';
         sig1=A1*sin(2*pi*alp.*t3);
         sig2=A2*sin(2*pi*beta.*t3);
         sig=sig1+sig2;  
         t=t3;
         
     case 7
-        disp('Signal = A1*sinc(alp.*t)+A2*sinc(beta.*t)')
+        disp('Signal = A1*sinc(alp.*t)+A2*sinc(beta.*t)') ; name_sig='sinc';
         sig1=A1*sinc(10*alp.*t);
         sig2=A2*sinc(10*beta.*t);
         sig = sig1+circshift(sig2',floor(N*0.5))';
         
 
     case 8
-        disp('Signal = RC circuit decharge ')
+        disp('Signal = RC circuit decharge '); name_sig='RC';
         %% RC cicrcuit
         VS=10;RC=0.08;
         SW_vla=0.96;                                                                 % the output value to swithch decharge.
@@ -156,7 +156,7 @@ switch sig_num
 % sig = circshift(sig',floor(-N/2))';
         
     otherwise
-        disp('num of the signal does mnot exist, PLZ choose an other one')
+        disp('num of the signal does mnot exist, PLZ choose an other one'); name_sig='zero';
         disp('Signal = alpha')
         sig=0*ones([1,N]);
 end      
